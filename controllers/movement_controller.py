@@ -25,7 +25,7 @@ class Direction(Enum):
 @dataclass
 class MovementController:
     block: int = config.BLOCK_SIZE
-    speed: int = 2
+    speed: float = 2.0
     direction: Direction = None
 
     _opposites = {
@@ -42,15 +42,17 @@ class MovementController:
             self.change_direction(direction)
 
     def change_direction(self, new_direction: Direction) -> None:
+        if self.direction == self._opposites[new_direction]:
+            return
         self.direction = new_direction
 
     def next_position(self, position: Position) -> Position:
         x, y = position.x, position.y
         if not self.direction:
-            return position
+            return Position(x, y)
         dx, dy = self.direction.vector
-        position.x += dx * self.speed
-        position.y += dy * self.speed
-        return position
+        x += dx * self.block
+        y += dy * self.block
+        return Position(x, y)
 
 
